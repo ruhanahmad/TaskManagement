@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:taskmanagement/controller/getx.dart';
 import 'package:taskmanagement/login.dart';
+import 'package:taskmanagement/screens/workerList.dart';
 
 class AdminPage extends StatefulWidget {
   @override
@@ -31,22 +32,36 @@ class _AdminPageState extends State<AdminPage> {
   UserController userController  = Get.put(UserController());
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Admin Panel"),
-      actions: [
+    return 
+    DefaultTabController(
+  length: 3,
+  child: Scaffold(
+    appBar: AppBar(
+      automaticallyImplyLeading: false,
+            actions: [
         ElevatedButton(onPressed: ()async{
          await FirebaseAuth.instance.signOut();
   Get.to(LoginScreen());
 
       }, child: Text("Logout"))
       ],
+      bottom: TabBar(
+        tabs: [
+          Tab(icon: Icon(Icons.flight)),
+          Tab(icon: Icon(Icons.directions_transit)),
+          Tab(icon: Icon(Icons.directions_car)),
+        ],
       ),
-    
-      body: Form(
+      title: Text('Admin Panel'),
+    ),
+    body: TabBarView(
+      children: [
+           Form(
         key: _formKey,
         child: SingleChildScrollView(
           child: Column(
             children: [
+              Text("Add Workers"),
               TextFormField(
                 controller: userController.firstNameController,
                 decoration: InputDecoration(labelText: 'First Name'),
@@ -133,7 +148,14 @@ class _AdminPageState extends State<AdminPage> {
           ),
         ),
       ),
-    );
+         WorkerList(),
+        // Icon(Icons.directions_transit, size: 350),
+        Icon(Icons.directions_car, size: 350),
+      ],
+    ),
+  ),
+);
+
   }
 
   bool isValidEmail(String email) {

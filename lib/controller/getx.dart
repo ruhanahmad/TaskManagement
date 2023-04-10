@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:taskmanagement/models/worker.dart';
 import 'package:taskmanagement/screens/admin_page.dart';
 import 'package:taskmanagement/screens/homepage.dart';
 
@@ -13,11 +16,56 @@ class UserController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
     User? userId ;
  bool isWorker = true;
- getIDo()async{
+List accountsList = [];
+
+
+
+    dynamic valuess;
+      List<DocumentSnapshot> vis = [];
+       var idAccount;
+String? descriptionController; 
+String? titleController;
+
+Future  getIDo()async{
   userId = await FirebaseAuth.instance.currentUser;
   update();
  print(userId);
 }
+       addTasks(String? id) async {
+         final firebaseInstance = FirebaseFirestore.instance;
+    final docRef = firebaseInstance.collection('workers').doc(id).collection("tasks");
+
+    final data = {
+      'taskName': titleController,
+      'taskDescription': descriptionController,
+       'status':"inactive",
+        'time':'0',
+    };
+
+    await docRef.add(data);
+
+    Get.snackbar("Data Added", "Data added successfully");
+       }
+ Future  getAccountData() async {
+   await getIDo();
+  // EasyLoading.show();
+    // welcome = Welcome();
+    // accountss  = Account();
+       await FirebaseFirestore.instance
+        .collection("workers")
+        .get()
+        .then((QuerySnapshot value) {
+                   vis = value.docs;
+       idAccount = vis.first.id;
+                //  print(valuess);
+                //   // balances  =  valuess['accountB'];
+                // //  accountsList.add(Account.fromJson(value));
+                //  print(valuess);
+             update(); 
+        });  
+        // EasyLoading.dismiss();
+  }
+
  TextEditingController  firstNameController = TextEditingController();
  TextEditingController  lastNameController = TextEditingController();
  TextEditingController  jobTitleController = TextEditingController();
@@ -56,7 +104,13 @@ class UserController extends GetxController {
      
    
  }
-
+clearss()async{
+firstNameController.clear();
+lastNameController.clear();
+jobTitleController.clear();
+emailController.clear();
+phoneController.clear();
+}
   Future saveData() async {
     final firebaseInstance = FirebaseFirestore.instance;
     final docRef = firebaseInstance.collection('workers').doc(userId!.uid);
@@ -70,7 +124,7 @@ class UserController extends GetxController {
     };
 
     await docRef.set(data);
-
+   await  clearss();
     Get.snackbar("Data Added", "Data added successfully");
 
    
