@@ -49,7 +49,8 @@ var userId;
               final status = document['status'] ?? 'none';
               final time = document['time'] ?? 0;
 
-              return ListTile(
+              return
+               ListTile(
                 title: Text(document['taskName']),
                 subtitle: Text('Priority $status, Time: $time hours'),
                 onTap: () => _showContextMenu(context, document),

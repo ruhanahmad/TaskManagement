@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:taskmanagement/controller/getx.dart';
+import 'package:taskmanagement/screens/dummy.dart';
 import 'package:taskmanagement/screens/task.dart';
 import 'package:taskmanagement/screens/taskshow.dart';
 
@@ -36,12 +37,23 @@ class _HomePageState extends State<HomePage> {
   // Get.to(LoginScreen());
 
       }, child: Text("Add Task")),
+
               ElevatedButton(onPressed: ()async{
 // Get.to(TaskListScreen());
 await userController.getIDo();
 Get.to(MyListView());
+// Get.to(MyListScreen());
+
 
       }, child: Text("tasklistss")),
+              ElevatedButton(onPressed: ()async{
+// Get.to(TaskListScreen());
+// await userController.getIDo();
+// Get.to(MyListView());
+Get.to(MyListScreen());
+
+
+      }, child: Text("selectonpage")),
       ],
       ),
       body: Container(child: Column(children: [
