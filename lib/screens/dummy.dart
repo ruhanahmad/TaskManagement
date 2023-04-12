@@ -74,11 +74,11 @@ var userId;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Select up to 3 tiles'),
-      ),
+      // appBar: AppBar(
+      //   title: Text('Select up to 3 tiles'),
+      // ),
       body:    StreamBuilder<QuerySnapshot>(
-        stream: firestore.collection('workers').doc(userController.userId!.uid).collection("tasks").snapshots(),
+        stream: firestore.collection('workers').doc(userId!.uid).collection("tasks").snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
             return Center(child: CircularProgressIndicator());

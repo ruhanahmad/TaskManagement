@@ -1,9 +1,12 @@
 //---------------------------------------------------------------//
 
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taskmanagement/controller/getx.dart';
 
 class MyListView extends StatefulWidget {
@@ -16,13 +19,52 @@ class _MyListViewState extends State<MyListView> {
 
 UserController userController = Get.put(UserController());
 var userId;
+ late Timer _timer;
+  int _countdownValue = 120;
+  bool _isCountdownRunning = false;
+
+ void _startCountdown() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+          _countdownValue--;
+      });
+    });
+  }
+
+  void _pauseCountdown() {
+    _timer.cancel();
+  }
+
+  void _loadCountdownValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _countdownValue = prefs.getInt('countdown_value') ?? 0;
+    });
+  }
+
+  void _saveCountdownValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('countdown_value', _countdownValue);
+  }
+
+  @override
+  void dispose() {
+    _pauseCountdown();
+    _saveCountdownValue();
+    super.dispose();
+  }
+ 
+
 @override
   void initState() {
    
   userId = FirebaseAuth.instance.currentUser;
 
  print(userId);
+_loadCountdownValue();
+ _timer = Timer.periodic(Duration(seconds: 1), (timer) {
 
+ });
     // TODO: implement initState
     super.initState();
   }
@@ -30,11 +72,12 @@ var userId;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('ListView Example'),
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: firestore.collection('workers').doc(userController.userId!.uid).collection("tasks").snapshots(),
+      // appBar: AppBar(
+      //   title: Text('ListView Example'),
+      // ),
+      body:
+       StreamBuilder<QuerySnapshot>(
+        stream: firestore.collection('workers').doc(userId!.uid).collection("tasks").where('selected', isEqualTo: true).snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
             return Center(child: CircularProgressIndicator());
@@ -43,16 +86,32 @@ var userId;
           final documents = snapshot.data!.docs;
 
           return ListView.builder(
-            itemCount: documents.length,
+            itemCount: 3,
             itemBuilder: (BuildContext context, int index) {
               final document = documents[index];
               final status = document['status'] ?? 'none';
               final time = document['time'] ?? 0;
+              
 
               return
                ListTile(
+                 leading:      
+                    ElevatedButton(
+              child: Text(_isCountdownRunning ? 'Pause' : 'Play'),
+              onPressed: () {
+                setState(() {
+                  if (_isCountdownRunning) {
+                    _pauseCountdown();
+                  } else {
+                    _startCountdown();
+                  }
+                  _isCountdownRunning = !_isCountdownRunning;
+                });
+              },
+            ),
                 title: Text(document['taskName']),
                 subtitle: Text('Priority $status, Time: $time hours'),
+                trailing:   Text('${ _countdownValue ~/ 3600}:${( _countdownValue ~/ 60) % 60}:${ _countdownValue % 60}'),
                 onTap: () => _showContextMenu(context, document),
               );
             },
@@ -117,6 +176,7 @@ var userId;
   }
 }
 
+void intTo(){}
 enum Priority {
   none,
   high,
