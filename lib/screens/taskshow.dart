@@ -111,7 +111,7 @@ _loadCountdownValue();
             ),
                 title: Text(document['taskName']),
                 subtitle: Text('Priority $status, Time: $time hours'),
-                trailing:   Text('${ _countdownValue ~/ 3600}:${( _countdownValue ~/ 60) % 60}:${ _countdownValue % 60}'),
+                // trailing:   Text('${ _countdownValue ~/ 3600}:${( _countdownValue ~/ 60) % 60}:${ _countdownValue % 60}'),
                 onTap: () => _showContextMenu(context, document),
               );
             },

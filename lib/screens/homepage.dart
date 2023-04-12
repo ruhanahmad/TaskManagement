@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:taskmanagement/controller/getx.dart';
+import 'package:taskmanagement/screens/addTaskThree.dart';
+import 'package:taskmanagement/screens/addTaskTwo.dart';
 import 'package:taskmanagement/screens/dummy.dart';
 import 'package:taskmanagement/screens/dummyfour.dart';
 import 'package:taskmanagement/screens/dummythree.dart';
@@ -38,7 +40,7 @@ class _HomePageState extends State<HomePage> {
 
       }, child: Text("Logout")),
               ElevatedButton(onPressed: ()async{
-                Get.to(TasksPage());
+                Get.to(AddNewTaskThree());
   //        await FirebaseAuth.instance.signOut();
   // Get.to(LoginScreen());
 

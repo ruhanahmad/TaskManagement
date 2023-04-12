@@ -39,7 +39,7 @@ Future  getIDo()async{
       'taskName': titleController,
       'taskDescription': descriptionController,
        'status':"inactive",
-        'time':"0",
+        'time':0,
     };
 
     await docRef.add(data);
