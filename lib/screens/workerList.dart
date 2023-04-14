@@ -16,7 +16,8 @@ class _WorkerListState extends State<WorkerList> {
       // appBar: AppBar(
       //   title: Text('Firestore Example'),
       // ),
-      body: StreamBuilder<QuerySnapshot>(
+      body: 
+      StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('workers').snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
