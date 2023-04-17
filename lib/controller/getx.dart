@@ -40,12 +40,41 @@ Future  getIDo()async{
       'taskDescription': descriptionController,
        'status':"inactive",
         'time':0,
+        "overdue":false,
+        "taskComplete":false,
+        "selected":false,
+        "rating":"0",
     };
 
     await docRef.add(data);
 
     Get.snackbar("Data Added", "Data added successfully");
        }
+
+
+
+      completedWorkList(String? id) async {
+         final firebaseInstance = FirebaseFirestore.instance;
+    final docRef = firebaseInstance.collection('completedTask').doc(id);
+
+    final data = {
+      'taskName': titleController,
+      'taskDescription': descriptionController,
+       'status':"inactive",
+        'time':0,
+        "overdue":false,
+        "taskComplete":false,
+        "selected":false,
+    };
+
+    await docRef.set(data);
+
+    Get.snackbar("Data Added", "Data added successfully");
+       }
+
+
+
+
  Future  getAccountData() async {
    await getIDo();
   // EasyLoading.show();

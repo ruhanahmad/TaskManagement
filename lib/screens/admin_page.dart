@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:taskmanagement/controller/getx.dart';
 import 'package:taskmanagement/login.dart';
+import 'package:taskmanagement/screens/completedTask.dart';
 import 'package:taskmanagement/screens/workerList.dart';
 
 class AdminPage extends StatefulWidget {
@@ -49,7 +50,7 @@ class _AdminPageState extends State<AdminPage> {
         tabs: [
           Tab(icon: Icon(Icons.flight)),
           Tab(icon: Icon(Icons.directions_transit)),
-          Tab(icon: Icon(Icons.directions_car)),
+          Tab(text: "Completed List")
         ],
       ),
       title: Text('Admin Panel'),
@@ -150,7 +151,7 @@ class _AdminPageState extends State<AdminPage> {
       ),
          WorkerList(),
         // Icon(Icons.directions_transit, size: 350),
-        Icon(Icons.directions_car, size: 350),
+        CompletedList(),
       ],
     ),
   ),

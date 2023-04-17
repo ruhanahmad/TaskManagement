@@ -86,7 +86,7 @@ _loadCountdownValue();
           final documents = snapshot.data!.docs;
 
           return ListView.builder(
-            itemCount: 3,
+            itemCount: documents.length,
             itemBuilder: (BuildContext context, int index) {
               final document = documents[index];
               final status = document['status'] ?? 'none';

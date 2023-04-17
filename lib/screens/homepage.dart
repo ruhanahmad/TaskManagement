@@ -79,14 +79,15 @@ Get.to(MyListView());
           Tab(icon: Icon(Icons.directions_car)),
         ],
       ),
-      title: Text('Admin Panel'),
+      title: Text('Worker Panel'),
     ),
     body: TabBarView(
       children: [
     MyListScreen(),
+    MyListPage(),
           MyListView(),
         // Icon(Icons.directions_transit, size: 350),
-        Icon(Icons.directions_car, size: 350),
+      
       ],
     ),
   ),

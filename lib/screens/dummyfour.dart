@@ -10,8 +10,9 @@ class ListItem {
   String title;
   int duration;
   bool isRunning;
+  bool isStop;
 
-  ListItem({required this.title, required this.duration, this.isRunning = false});
+  ListItem({required this.title, required this.duration, this.isRunning = false, this.isStop = false});
 }
 
 
@@ -28,13 +29,14 @@ var userId;
   void initState() {
   userId = FirebaseAuth.instance.currentUser;
 _fetchData();
+
     // TODO: implement initState
     super.initState();
   }
   
   Future<void> _fetchData() async {
     // Fetch data from Firestore and convert it into a list of FirestoreItem objects
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('workers').doc(userId!.uid).collection("tasks").get();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('workers').doc(userId!.uid).collection("tasks").where('selected', isEqualTo: true).where("taskComplete",isEqualTo: false).get();
     List<ListItem> items = [];
     querySnapshot.docs.forEach((doc) {
       items.add(ListItem(title: doc['taskName'], duration: doc['time']));
@@ -45,17 +47,23 @@ _fetchData();
     });
   }
 
+  //  @override
+  // void dispose() {
+  //  _items = [];
+  //   super.dispose();
+  // }
+  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('My List'),
-      ),
+      // appBar: AppBar(
+      //   title: Text('My List'),
+      // ),
       body: 
       
       StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('workers').doc(userId!.uid).collection("tasks").where('selected', isEqualTo: true).snapshots(),
+        stream: FirebaseFirestore.instance.collection('workers').doc(userId!.uid).collection("tasks").where('selected', isEqualTo: true).where("taskComplete",isEqualTo: false).snapshots(),
 
         
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
@@ -64,38 +72,61 @@ _fetchData();
           }
 
           final documents = snapshot.data!.docs;
-            return    ListView.builder(
-        itemCount: _items.length > 3 ? 3 : _items.length,
+            return   
+             ListView.builder(
+        itemCount: documents.length ,
         itemBuilder: (BuildContext context, int index) {
-              final status = documents[index]['status'] ?? 'none';
+              // final status = documents[index]['status'] ?? 'none'; 
+              final taskCom = documents[index]["taskComplete"] ?? "none";
+              final taskName = documents[index]["taskName"] ?? "none";
           return ListTile(
                        leading:      
-                    ElevatedButton(
-              child: Text(_items[index].isRunning ? 'Pause' : 'Play'),
+                  taskCom? Text(""): ElevatedButton(
+              child: Text("Stop"),
               onPressed: () {
-                  setState(() {
+                 
+                     if (_items[index].isStop) {
+                  _items[index].isStop = false;
+                } 
+                else {
+                  _items[index].isStop = true;
+                     documents[index].reference.update({
+        'taskComplete': true,
+        "selected":false,
+        // 'time': time,
+      });
+       
+
+                  // startTimer(index);
+                }   
+           
+              },
+            ),
+            title: Text(taskName,style: TextStyle( color:taskCom ? Colors.yellow : Colors.tealAccent,),),
+            // subtitle: Text(status),
+            trailing:
+              GestureDetector(
+                onTap: () {
+                            setState(() {
                 if (_items[index].isRunning) {
                   _items[index].isRunning = false;
                 } else {
                   _items[index].isRunning = true;
-                  startTimer(index);
+                  startTimer(index,documents);
                 }
               });
-              },
-            ),
-            title: Text(_items[index].title),
-            subtitle: Text(status),
-            trailing:
-              Text('${  _items[index].duration ~/ 3600}:${( _items[index].duration ~/ 60) % 60}:${  _items[index].duration % 60}' , style: TextStyle(
-                color: _items[index].isRunning ? Colors.red : Colors.grey,
-              ),),
+                },
+                child:taskCom ?Text("") :Text('${  _items[index].duration ~/ 3600}:${( _items[index].duration ~/ 60) % 60}:${  _items[index].duration % 60}' , style: TextStyle(
+                  color: _items[index].isRunning ? Colors.red : Colors.grey,
+                ),),
+              ),
             //  Text(
             //   _items[index].duration.toString(),
             //   style: TextStyle(
             //     color: _items[index].isRunning ? Colors.red : Colors.grey,
             //   ),
             // ),
-          onTap: () => _showContextMenu(context, documents[index]),
+          // onTap: () => _showContextMenu(context, documents[index]),
           );
         },
       );
@@ -164,9 +195,13 @@ _fetchData();
     
   }
   
-  void startTimer(int index) {
+  void startTimer(int index,List<QueryDocumentSnapshot<Object?>> documentss){
     Timer.periodic(Duration(seconds: 1), (timer) {
       if (!_items[index].isRunning) {
+        timer.cancel();
+        return;
+      }
+        if (_items[index].isStop) {
         timer.cancel();
         return;
       }
@@ -175,11 +210,23 @@ _fetchData();
         _items[index].duration--;
       });
 
-      if (_items[index].duration == 0) {
+      if (_items[index].duration < 0) {
+      //   setState(() {
+          documentss[index].reference.update({
+        'overdue': true,
+        // 'time': time,
+      });
+      //   });
+ 
         timer.cancel();
+
       }
+      
     });
+
+    
   }
+
 }
 enum Priority {
   none,

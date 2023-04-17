@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:taskmanagement/screens/addTaskTwo.dart';
 import 'package:taskmanagement/screens/addnewtask.dart';
 import 'package:get/get.dart';
+import 'package:taskmanagement/screens/completedTask.dart';
 class WorkerList extends StatefulWidget {
   @override
   State<WorkerList> createState() => _WorkerListState();
@@ -48,6 +49,9 @@ class _WorkerListState extends State<WorkerList> {
                   
                   },
                 ),
+                onTap: () {
+                  Get.to( CompletedList(id:id));
+                },
               );
             },
           );
